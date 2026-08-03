@@ -5,13 +5,13 @@ plugins {
     id("com.gradleup.shadow") version "9.2.2"
 }
 
-val majorVersion = "1.9.0"
+val majorVersion = "1.9.1"
 val buildNumber = System.getenv("BUILD_NUMBER") ?: "LOCAL"
 val buildVersion = "DEV-$buildNumber"
 val release = "Release"
 
 group = "me.clip"
-version = "$majorVersion-$release"
+version = "$majorVersion-$buildVersion"
 
 repositories {
     mavenCentral()
