@@ -11,7 +11,7 @@ val buildVersion = "DEV-$buildNumber"
 val release = "Release"
 
 group = "me.clip"
-version = "$majorVersion-$buildVersion"
+version = "$majorVersion-$release"
 
 repositories {
     mavenCentral()
