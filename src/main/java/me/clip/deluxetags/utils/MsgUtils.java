@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class MsgUtils {
@@ -59,7 +59,7 @@ public class MsgUtils {
         Matcher m = PATTERN.matcher(input);
         if (SUPPORTS_HEX_COLORS) {
             while (m.find()) {
-                input = input.replace(m.group(), ChatColor.of(m.group(1)).toString());
+                input = input.replace(m.group(), toLegacyHex(m.group(1)));
             }
         } else {
             while (m.find()) {
@@ -123,11 +123,19 @@ public class MsgUtils {
 
     private static boolean supportsHexColors() {
         try {
-            ChatColor.class.getDeclaredMethod("of", String.class);
+            Class.forName("net.md_5.bungee.api.ChatColor").getDeclaredMethod("of", String.class);
             return true;
-        } catch (Exception ignored) {
+        } catch (ReflectiveOperationException ignored) {
             return false;
         }
+    }
+
+    private static String toLegacyHex(String hex) {
+        StringBuilder result = new StringBuilder("\u00A7x");
+        for (int i = 1; i < hex.length(); i++) {
+            result.append('\u00A7').append(hex.charAt(i));
+        }
+        return result.toString();
     }
 
     public static void msg(CommandSender s, String message) {

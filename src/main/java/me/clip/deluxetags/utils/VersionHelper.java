@@ -3,12 +3,11 @@ package me.clip.deluxetags.utils;
 import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.NotNull;
 
@@ -85,20 +84,13 @@ public class VersionHelper {
    */
   public static final boolean IS_ITEM_LEGACY = CURRENT_VERSION < V1_13;
 
-  /**
-   * Checks if the version supports {@link org.bukkit.persistence.PersistentDataContainer}
-   */
+  /** Checks if the version supports persistent data containers. */
   public static final boolean IS_PDC_VERSION = CURRENT_VERSION >= V1_14;
 
-  /**
-   * Checks if the version doesn't have {@link org.bukkit.inventory.meta.SkullMeta#setOwningPlayer(OfflinePlayer)} and
-   * {@link org.bukkit.inventory.meta.SkullMeta#setOwner(String)} should be used instead
-   */
+  /** Checks if legacy skull owner handling is required. */
   public static final boolean IS_SKULL_OWNER_LEGACY = CURRENT_VERSION <= V1_12;
 
-  /**
-   * Checks if the version has {@link org.bukkit.inventory.meta.ItemMeta#setCustomModelData(Integer)}
-   */
+  /** Checks if integer custom model data is supported. */
   public static final boolean IS_CUSTOM_MODEL_DATA = CURRENT_VERSION >= V1_14;
 
   public static final boolean IS_CUSTOM_MODEL_DATA_COMPONENT = CURRENT_VERSION >= V1_21_4;
@@ -112,30 +104,27 @@ public class VersionHelper {
   private static List<InventoryType> getChestInventoryTypes() {
     if (CHEST_INVENTORY_TYPES != null) return CHEST_INVENTORY_TYPES;
 
-    if (CURRENT_VERSION >= V1_14) {
-      CHEST_INVENTORY_TYPES = Arrays.asList(
-        InventoryType.BARREL,
-        InventoryType.CHEST,
-        InventoryType.CRAFTING,
-        InventoryType.CREATIVE,
-        InventoryType.ENDER_CHEST,
-        InventoryType.LECTERN,
-        InventoryType.MERCHANT,
-        InventoryType.SHULKER_BOX
-      );
+    final List<InventoryType> chestInventoryTypes = new ArrayList<>();
+    final String[] names = {
+      "BARREL",
+      "CHEST",
+      "CRAFTING",
+      "CREATIVE",
+      "ENDER_CHEST",
+      "LECTERN",
+      "MERCHANT",
+      "SHULKER_BOX"
+    };
 
-      return CHEST_INVENTORY_TYPES;
+    for (final String name : names) {
+      try {
+        chestInventoryTypes.add(InventoryType.valueOf(name));
+      } catch (IllegalArgumentException ignored) {
+        // The inventory type was added in a later Minecraft version.
+      }
     }
 
-    CHEST_INVENTORY_TYPES = Arrays.asList(
-      InventoryType.CHEST,
-      InventoryType.CRAFTING,
-      InventoryType.CREATIVE,
-      InventoryType.ENDER_CHEST,
-      InventoryType.MERCHANT,
-      InventoryType.SHULKER_BOX
-    );
-
+    CHEST_INVENTORY_TYPES = Collections.unmodifiableList(chestInventoryTypes);
     return CHEST_INVENTORY_TYPES;
   }
 

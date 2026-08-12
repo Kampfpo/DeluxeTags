@@ -2,10 +2,13 @@ package me.clip.deluxetags.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
@@ -108,8 +111,8 @@ public class TagConfigTest {
   }
 
   @Test
-  public void addsSectionCommentsToSavedConfig() {
-    YamlConfiguration config = new YamlConfiguration();
+  public void addsSectionCommentsWhenSupportedByBukkit() {
+    CommentCapableConfiguration config = new CommentCapableConfiguration();
     config.set("use_minimessage", false);
     config.set("gui.name", "&6Tags");
     config.set("categories.general.order", 1);
@@ -117,10 +120,22 @@ public class TagConfigTest {
 
     TagConfig.applySectionComments(config);
 
-    String yaml = config.saveToString();
-    assertTrue(yaml.contains("# Main Options\nuse_minimessage: false"));
-    assertTrue(yaml.contains("use_minimessage: false\n\n# GUI layout and buttons\ngui:"));
-    assertTrue(yaml.contains("  name: '&6Tags'\n\n# Tag category menus\ncategories:"));
-    assertTrue(yaml.contains("  order: 1\n\n# Tags\ndeluxetags:"));
+    assertEquals(Collections.singletonList("Main Options"), config.comments.get("use_minimessage"));
+    assertEquals(Arrays.asList(null, "GUI layout and buttons"), config.comments.get("gui"));
+    assertEquals(Arrays.asList(null, "Tag category menus"), config.comments.get("categories"));
+    assertEquals(Arrays.asList(null, "Tags"), config.comments.get("deluxetags"));
+  }
+
+  @Test
+  public void ignoresSectionCommentsWhenUnsupportedByLegacyBukkit() {
+    TagConfig.applySectionComments(new YamlConfiguration());
+  }
+
+  public static class CommentCapableConfiguration extends YamlConfiguration {
+    final Map<String, List<String>> comments = new LinkedHashMap<>();
+
+    public void setComments(String path, List<String> comments) {
+      this.comments.put(path, comments);
+    }
   }
 }

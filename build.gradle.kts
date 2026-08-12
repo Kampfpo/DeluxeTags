@@ -20,8 +20,20 @@ repositories {
     maven("https://repo.extendedclip.com/releases/")
 }
 
+val modernSpigotApi = configurations.create("modernSpigotApi") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.9-R0.1-SNAPSHOT")
+    // Compile against the oldest supported Bukkit API. Newer, optional APIs are
+    // accessed through compatibility helpers so accidental baseline bumps fail
+    // at compile time.
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT") {
+        // The API's historical Bungee chat snapshot is no longer published.
+        // DeluxeTags does not use that package.
+        exclude(group = "net.md-5", module = "bungeecord-chat")
+    }
     compileOnly("me.clip:placeholderapi:2.11.6")
 
     implementation("com.github.cryptomorin:XSeries:13.7.0")
@@ -29,6 +41,7 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
 
     testImplementation("junit:junit:4.13.2")
+    modernSpigotApi("org.spigotmc:spigot-api:1.21.9-R0.1-SNAPSHOT")
 }
 
 tasks {
@@ -53,6 +66,25 @@ tasks {
         relocate("com.cryptomorin.xseries", "me.clip.deluxetags.libs.xseries")
         relocate("net.kyori", "me.clip.deluxetags.libs.kyori")
         archiveFileName.set("DeluxeTags-${project.version}.jar")
+    }
+
+    val modernTest by registering(Test::class) {
+        description = "Runs the test suite with the modern Spigot 1.21.9 API"
+        group = "verification"
+        dependsOn(testClasses)
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = files(
+            sourceSets.test.get().output,
+            sourceSets.main.get().output,
+            modernSpigotApi,
+            configurations.testRuntimeClasspath.get().filterNot {
+                it.name.startsWith("spigot-api-1.8.8-")
+            }
+        )
+    }
+
+    check {
+        dependsOn(modernTest)
     }
 }
 

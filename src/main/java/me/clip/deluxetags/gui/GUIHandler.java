@@ -6,9 +6,9 @@ import me.clip.deluxetags.DeluxeTags;
 import me.clip.deluxetags.config.Lang;
 import me.clip.deluxetags.tags.DeluxeTag;
 import me.clip.deluxetags.tags.DeluxeTagCategory;
+import me.clip.deluxetags.utils.BukkitCompat;
 import me.clip.deluxetags.utils.ItemUtils;
 import me.clip.deluxetags.utils.MsgUtils;
-import me.clip.deluxetags.utils.VersionHelper;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -506,11 +506,7 @@ public class GUIHandler implements Listener {
         }
 
         SkullMeta skullMeta = (SkullMeta) itemMeta;
-        if (VersionHelper.IS_SKULL_OWNER_LEGACY) {
-            skullMeta.setOwner(player.getName());
-        } else {
-            skullMeta.setOwningPlayer(player);
-        }
+        BukkitCompat.setSkullOwner(skullMeta, player);
 
         itemStack.setItemMeta(skullMeta);
     }

@@ -12,12 +12,12 @@ import me.clip.deluxetags.gui.ItemType;
 import me.clip.deluxetags.gui.options.CustomModelDataComponent;
 import me.clip.deluxetags.tags.DeluxeTag;
 import me.clip.deluxetags.tags.DeluxeTagCategory;
+import me.clip.deluxetags.utils.BukkitCompat;
 import me.clip.deluxetags.utils.ItemUtils;
 import me.clip.deluxetags.utils.StringUtils;
 import me.clip.deluxetags.utils.VersionHelper;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -283,10 +283,10 @@ public class TagConfig {
   }
 
   static void applySectionComments(FileConfiguration config) {
-    config.setComments("use_minimessage", Collections.singletonList("Main Options"));
-    config.setComments("gui", Arrays.asList(null, "GUI layout and buttons"));
-    config.setComments("categories", Arrays.asList(null, "Tag category menus"));
-    config.setComments("deluxetags", Arrays.asList(null, "Tags"));
+    BukkitCompat.setComments(config, "use_minimessage", Collections.singletonList("Main Options"));
+    BukkitCompat.setComments(config, "gui", Arrays.asList(null, "GUI layout and buttons"));
+    BukkitCompat.setComments(config, "categories", Arrays.asList(null, "Tag category menus"));
+    BukkitCompat.setComments(config, "deluxetags", Arrays.asList(null, "Tags"));
   }
 
   static void migrateTagAvailabilityPlaceholder(FileConfiguration config) {
@@ -519,17 +519,14 @@ public class TagConfig {
 
     // Sets Item Model
     if (VersionHelper.HAS_TOOLTIP_STYLE && config.isSet(basePath + ".item_model")) {
-      NamespacedKey itemModel = NamespacedKey.fromString(config.getString(basePath + ".item_model"));
-      if (itemModel != null) {
-        itemMeta.setItemModel(itemModel);
-      }
+      BukkitCompat.setItemModel(itemMeta, config.getString(basePath + ".item_model"));
     }
 
     // Sets Model Data
     if (VersionHelper.IS_CUSTOM_MODEL_DATA && config.isSet(basePath + ".model_data")) {
       try {
         final int modelData = config.getInt(basePath + ".model_data");
-        itemMeta.setCustomModelData(modelData);
+        BukkitCompat.setCustomModelData(itemMeta, modelData);
       } catch (final Exception ignored) {
       }
     }
@@ -542,7 +539,7 @@ public class TagConfig {
         .floats(config.getStringList(basePath + ".model_data_component.floats"))
         .strings(config.getStringList(basePath + ".model_data_component.strings"));
 
-      itemMeta.setCustomModelDataComponent(parseCustomModelDataComponent(configCustomModelDataComponent, itemMeta.getCustomModelDataComponent()));
+      applyCustomModelDataComponent(itemMeta, configCustomModelDataComponent);
     }
 
     itemStack.setItemMeta(itemMeta);
@@ -841,43 +838,42 @@ public class TagConfig {
     return slotsList;
   }
 
-  private @NotNull org.bukkit.inventory.meta.components.CustomModelDataComponent parseCustomModelDataComponent(
-    @NotNull final CustomModelDataComponent unparsedComponent,
-    @NotNull final org.bukkit.inventory.meta.components.CustomModelDataComponent component
+  private void applyCustomModelDataComponent(
+    @NotNull final ItemMeta itemMeta,
+    @NotNull final CustomModelDataComponent unparsedComponent
   ) {
+    List<Color> colors = Collections.emptyList();
     if (!unparsedComponent.colors().isEmpty()) {
-      final List<Color> colors = unparsedComponent.colors()
+      colors = unparsedComponent.colors()
         .stream()
         .map(this::parseRGBColor)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
-      component.setColors(colors);
     }
 
+    List<Boolean> flags = Collections.emptyList();
     if (!unparsedComponent.flags().isEmpty()) {
-      final List<Boolean> flags = unparsedComponent.flags()
+      flags = unparsedComponent.flags()
         .stream()
         .map(Boolean::parseBoolean)
         .collect(Collectors.toList());
-      component.setFlags(flags);
     }
 
+    List<Float> floats = Collections.emptyList();
     if (!unparsedComponent.floats().isEmpty()) {
-      final List<Float> floats = unparsedComponent.floats()
+      floats = unparsedComponent.floats()
         .stream()
         .map(Float::parseFloat)
         .collect(Collectors.toList());
-      component.setFloats(floats);
     }
 
-    if (!unparsedComponent.strings().isEmpty()) {
-      final List<String> strings = unparsedComponent.strings()
-        .stream()
-        .collect(Collectors.toList());
-      component.setStrings(strings);
-    }
-
-    return component;
+    BukkitCompat.setCustomModelDataComponent(
+      itemMeta,
+      colors,
+      flags,
+      floats,
+      unparsedComponent.strings()
+    );
   }
 
   private @Nullable Color parseRGBColor(@NotNull final String input) {
