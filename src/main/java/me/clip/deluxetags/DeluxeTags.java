@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import me.clip.deluxetags.commands.TagCommand;
+import me.clip.deluxetags.commands.TagTabCompleter;
 import me.clip.deluxetags.config.ConfigWrapper;
 import me.clip.deluxetags.config.Lang;
 import me.clip.deluxetags.config.TagConfig;
@@ -79,6 +80,7 @@ public class DeluxeTags extends JavaPlugin {
 
 		PluginCommand command = getCommand("tags");
 		if (command != null) command.setExecutor(new TagCommand(this));
+		if (command != null) command.setTabCompleter(new TagTabCompleter(this));
 		
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
 		
