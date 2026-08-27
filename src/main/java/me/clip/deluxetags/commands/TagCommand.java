@@ -10,6 +10,7 @@ import me.clip.deluxetags.DeluxeTags;
 import me.clip.deluxetags.config.Lang;
 import me.clip.deluxetags.tags.DeluxeTag;
 import me.clip.deluxetags.utils.MsgUtils;
+import me.clip.deluxetags.utils.Permissions;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,9 +47,9 @@ public class TagCommand implements CommandExecutor {
         return true;
       }
 
-      if (!player.hasPermission("deluxetags.gui")) {
+      if (!player.hasPermission(Permissions.GUI)) {
         MsgUtils.msg(player, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.gui"
+            Permissions.GUI,
         }));
         return true;
       }
@@ -75,51 +76,51 @@ public class TagCommand implements CommandExecutor {
 
       final StringBuilder perPermissionBuilder = new StringBuilder();
 
-      if (sender.hasPermission("deluxetags.gui")) {
+      if (sender.hasPermission(Permissions.GUI)) {
         perPermissionBuilder.append(color).append("/tags").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_TAGS.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.list")) {
+      if (sender.hasPermission(Permissions.LIST)) {
         perPermissionBuilder.append(color).append("/tags list (all/<playername>)").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_LIST.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.select")) {
+      if (sender.hasPermission(Permissions.SELECT)) {
         perPermissionBuilder.append(color).append("/tags select <tag>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_SELECT.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.set")) {
+      if (sender.hasPermission(Permissions.SET)) {
         perPermissionBuilder.append(color).append("/tags set <player> <tag>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_SET.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.clear")) {
+      if (sender.hasPermission(Permissions.CLEAR)) {
         perPermissionBuilder.append(color).append("/tags clear <player>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_CLEAR.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.create")) {
+      if (sender.hasPermission(Permissions.CREATE)) {
         perPermissionBuilder.append(color).append("/tags create <identifier> <tag>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_CREATE.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.delete")) {
+      if (sender.hasPermission(Permissions.DELETE)) {
         perPermissionBuilder.append(color).append("/tags delete <identifier>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_DELETE.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.setdescription")) {
+      if (sender.hasPermission(Permissions.SET_DESCRIPTION)) {
         perPermissionBuilder.append(color).append("/tags setdesc <identifier> <tag description>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_SET_DESC.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.setorder")) {
+      if (sender.hasPermission(Permissions.SET_ORDER)) {
         perPermissionBuilder.append(color).append("/tags setorder <identifier> <order>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_SET_ORDER.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.setdisplay")) {
+      if (sender.hasPermission(Permissions.SET_DISPLAY)) {
         perPermissionBuilder.append(color).append("/tags setdisplay <identifier> <tag display>").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_ADMIN_SET_DISPLAY.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.reload")) {
+      if (sender.hasPermission(Permissions.RELOAD)) {
         perPermissionBuilder.append(color).append("/tags reload").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_RELOAD.getConfigValue(null)).append("\n");
       }
-      if (sender.hasPermission("deluxetags.version")) {
+      if (sender.hasPermission(Permissions.VERSION)) {
         perPermissionBuilder.append(color).append("/tags version").append("\n");
         perPermissionBuilder.append(Lang.CMD_HELP_VERSION.getConfigValue(null)).append("\n");
       }
@@ -127,7 +128,7 @@ public class TagCommand implements CommandExecutor {
 
       if (perPermissionBuilder.length() == 0) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.gui"
+            Permissions.GUI
         }));
         return true;
       }
@@ -140,9 +141,9 @@ public class TagCommand implements CommandExecutor {
 
     } else if (args[0].equalsIgnoreCase("version")) {
 
-      if (!sender.hasPermission("deluxetags.version")) {
+      if (!sender.hasPermission(Permissions.VERSION)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-                "deluxetags.version"
+                Permissions.VERSION
         }));
         return true;
       }
@@ -157,9 +158,9 @@ public class TagCommand implements CommandExecutor {
 
     } else if (args[0].equalsIgnoreCase("list")) {
       if (args.length == 1) {
-        if (!sender.hasPermission("deluxetags.list")) {
+        if (!sender.hasPermission(Permissions.LIST)) {
           MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-              "deluxetags.list"
+              Permissions.LIST
           }));
           return true;
         }
@@ -199,9 +200,9 @@ public class TagCommand implements CommandExecutor {
         }));
 
       } else if (args[1].equalsIgnoreCase("all")) {
-        if (!sender.hasPermission("deluxetags.list.all")) {
+        if (!sender.hasPermission(Permissions.LIST_ALL)) {
           MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-              "deluxetags.list.all"
+              Permissions.LIST_ALL
           }));
           return true;
         }
@@ -231,9 +232,9 @@ public class TagCommand implements CommandExecutor {
         return true;
 
       } else {
-        if (!sender.hasPermission("deluxetags.list.player")) {
+        if (!sender.hasPermission(Permissions.LIST_PLAYER)) {
           MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-              "deluxetags.list.player"
+              Permissions.LIST_PLAYER
           }));
           return true;
         }
@@ -284,9 +285,9 @@ public class TagCommand implements CommandExecutor {
         return true;
       }
 
-      if (!player.hasPermission("deluxetags.select")) {
+      if (!player.hasPermission(Permissions.SELECT)) {
         MsgUtils.msg(player, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.select"
+            Permissions.SELECT
         }));
         return true;
       }
@@ -333,9 +334,9 @@ public class TagCommand implements CommandExecutor {
       return true;
 
     } else if (args[0].equalsIgnoreCase("create")) {
-      if (!sender.hasPermission("deluxetags.create")) {
+      if (!sender.hasPermission(Permissions.CREATE)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.create"
+            Permissions.CREATE
         }));
         return true;
       }
@@ -380,9 +381,9 @@ public class TagCommand implements CommandExecutor {
       }));
 
     } else if (args[0].equalsIgnoreCase("delete")) {
-      if (!sender.hasPermission("deluxetags.delete")) {
+      if (!sender.hasPermission(Permissions.DELETE)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.delete"
+           Permissions.DELETE
         }));
         return true;
       }
@@ -415,9 +416,9 @@ public class TagCommand implements CommandExecutor {
       }
 
     } else if (args[0].equalsIgnoreCase("setdesc") || args[0].equalsIgnoreCase("setdescription")) {
-      if (!sender.hasPermission("deluxetags.setdescription")) {
+      if (!sender.hasPermission(Permissions.SET_DESCRIPTION)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.setdescription"
+            Permissions.SET_DESCRIPTION
         }));
         return true;
       }
@@ -450,9 +451,9 @@ public class TagCommand implements CommandExecutor {
       return true;
 
     } else if (args[0].equalsIgnoreCase("setorder")) {
-      if (!sender.hasPermission("deluxetags.setorder")) {
+      if (!sender.hasPermission(Permissions.SET_ORDER)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.setorder"
+            Permissions.SET_ORDER
         }));
         return true;
       }
@@ -496,10 +497,10 @@ public class TagCommand implements CommandExecutor {
           args[2], args[1]
       }));
       return true;
-    } else if (args[0].equalsIgnoreCase("setdisplay")) {
+    } else if (args[0].equalsIgnoreCase(Permissions.SET_DISPLAY)) {
       if (!sender.hasPermission("deluxetags.setdisplay")) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.setdisplay"
+            Permissions.SET_DISPLAY
         }));
         return true;
       }
@@ -536,9 +537,9 @@ public class TagCommand implements CommandExecutor {
       return true;
 
     } else if (args[0].equalsIgnoreCase("set")) {
-      if (!sender.hasPermission("deluxetags.set")) {
+      if (!sender.hasPermission(Permissions.SET)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.set"
+            Permissions.SET
         }));
         return true;
       }
@@ -597,9 +598,9 @@ public class TagCommand implements CommandExecutor {
       return true;
 
     } else if (args[0].equalsIgnoreCase("clear")) {
-      if (!sender.hasPermission("deluxetags.clear")) {
+      if (!sender.hasPermission(Permissions.CLEAR)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.clear"
+            Permissions.CLEAR
         }));
         return true;
       }
@@ -646,9 +647,9 @@ public class TagCommand implements CommandExecutor {
 
     } else if (args[0].equalsIgnoreCase("reload")) {
 
-      if (!sender.hasPermission("deluxetags.reload")) {
+      if (!sender.hasPermission(Permissions.RELOAD)) {
         MsgUtils.msg(sender, Lang.CMD_NO_PERMS.getConfigValue(new String[]{
-            "deluxetags.reload"
+            Permissions.RELOAD
         }));
         return true;
       }
