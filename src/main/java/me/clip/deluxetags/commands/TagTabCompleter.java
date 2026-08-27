@@ -2,6 +2,7 @@ package me.clip.deluxetags.commands;
 
 import me.clip.deluxetags.DeluxeTags;
 import me.clip.deluxetags.tags.DeluxeTag;
+import me.clip.deluxetags.utils.Permissions;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,12 @@ public class TagTabCompleter implements TabCompleter {
         plugin = instance;
     }
 
+    private boolean hasAnyListPermission(CommandSender sender) {
+        return sender.hasPermission(Permissions.LIST)
+                || sender.hasPermission(Permissions.LIST_ALL)
+                || sender.hasPermission(Permissions.LIST_PLAYER);
+    }
+
     private List<String> getMatchingCompletions(String input, Collection<String> commands) {
         List<String> completions = new ArrayList<>();
 
@@ -32,6 +39,9 @@ public class TagTabCompleter implements TabCompleter {
         List<String> playerNames = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             playerNames.add(player.getName());
+        }
+        if (input == null || input.isEmpty()) {
+            return playerNames;
         }
         return getMatchingCompletions(input, playerNames);
     }
@@ -48,12 +58,22 @@ public class TagTabCompleter implements TabCompleter {
         return getMatchingCompletions(input, completions);
     }
 
-    private List<String> getListCompletions(String input, int argument) {
+    private List<String> getListCompletions(Player player, String input, int argument) {
         if (argument != 1) {
             return Collections.emptyList();
         }
 
-        return getPlayerCompletions(input);
+        List<String> completions = new ArrayList<>();
+
+        if (player.hasPermission(Permissions.LIST_ALL)) {
+            completions.add("all");
+        }
+
+        if (player.hasPermission(Permissions.LIST_PLAYER)) {
+            completions.addAll(getPlayerCompletions(input));
+        }
+
+        return getMatchingCompletions(input, completions);
     }
 
     private List<String> getSelectCompletions(Player player, String input, int arguments) {
@@ -121,37 +141,37 @@ public class TagTabCompleter implements TabCompleter {
             List<String> commands = new ArrayList<>();
 
             commands.add("help");
-            if (sender.hasPermission("deluxetags.list")) {
+            if (hasAnyListPermission(sender)) {
                 commands.add("list");
             }
-            if (sender.hasPermission("deluxetags.select")) {
+            if (sender.hasPermission(Permissions.SELECT)) {
                 commands.add("select");
             }
-            if (sender.hasPermission("deluxetags.set")) {
+            if (sender.hasPermission(Permissions.SET)) {
                 commands.add("set");
             }
-            if (sender.hasPermission("deluxetags.clear")) {
+            if (sender.hasPermission(Permissions.CLEAR)) {
                 commands.add("clear");
             }
-            if (sender.hasPermission("deluxetags.create")) {
+            if (sender.hasPermission(Permissions.CREATE)) {
                 commands.add("create");
             }
-            if (sender.hasPermission("deluxetags.delete")) {
+            if (sender.hasPermission(Permissions.DELETE)) {
                 commands.add("delete");
             }
-            if (sender.hasPermission("deluxetags.setdescription")) {
+            if (sender.hasPermission(Permissions.SET_DESCRIPTION)) {
                 commands.add("setdesc");
             }
-            if (sender.hasPermission("deluxetags.setorder")) {
+            if (sender.hasPermission(Permissions.SET_ORDER)) {
                 commands.add("setorder");
             }
-            if (sender.hasPermission("deluxetags.setdisplay")) {
+            if (sender.hasPermission(Permissions.SET_DISPLAY)) {
                 commands.add("setdisplay");
             }
-            if (sender.hasPermission("deluxetags.reload")) {
+            if (sender.hasPermission(Permissions.RELOAD)) {
                 commands.add("reload");
             }
-            if (sender.hasPermission("deluxetags.version")) {
+            if (sender.hasPermission(Permissions.VERSION)) {
                 commands.add("version");
             }
 
@@ -161,28 +181,28 @@ public class TagTabCompleter implements TabCompleter {
         int arguments = args.length - 1;
         String input = args[args.length - 1];
 
-        if (args[0].equalsIgnoreCase("list") && sender.hasPermission("deluxetags.list")) {
-            return getListCompletions(input, arguments);
+        if (args[0].equalsIgnoreCase("list") && hasAnyListPermission(sender)) {
+            return getListCompletions(player, input, arguments);
         }
-        if (args[0].equalsIgnoreCase("select") && sender.hasPermission("deluxetags.select")) {
+        if (args[0].equalsIgnoreCase("select") && sender.hasPermission(Permissions.SELECT)) {
             return getSelectCompletions(player, input, arguments);
         }
-        if (args[0].equalsIgnoreCase("set") && sender.hasPermission("deluxetags.set")) {
+        if (args[0].equalsIgnoreCase("set") && sender.hasPermission(Permissions.SET)) {
             return getSetCompletions(input, arguments, args);
         }
-        if (args[0].equalsIgnoreCase("clear") && sender.hasPermission("deluxetags.clear")) {
+        if (args[0].equalsIgnoreCase("clear") && sender.hasPermission(Permissions.CLEAR)) {
             return getClearCompletions(input, arguments);
         }
-        if (args[0].equalsIgnoreCase("delete") && sender.hasPermission("deluxetags.delete")) {
+        if (args[0].equalsIgnoreCase("delete") && sender.hasPermission(Permissions.DELETE)) {
             return getTagCompletions(input, arguments);
         }
-        if (args[0].equalsIgnoreCase("setdesc") && sender.hasPermission("deluxetags.setdescription")) {
+        if (args[0].equalsIgnoreCase("setdesc") && sender.hasPermission(Permissions.SET_DESCRIPTION)) {
             return getTagCompletions(input, arguments);
         }
-        if (args[0].equalsIgnoreCase("setorder") && sender.hasPermission("deluxetags.setorder")) {
+        if (args[0].equalsIgnoreCase("setorder") && sender.hasPermission(Permissions.SET_ORDER)) {
             return getTagCompletions(input, arguments);
         }
-        if (args[0].equalsIgnoreCase("setdisplay") && sender.hasPermission("deluxetags.setdisplay")) {
+        if (args[0].equalsIgnoreCase("setdisplay") && sender.hasPermission(Permissions.SET_DISPLAY)) {
             return getTagCompletions(input, arguments);
         }
 
